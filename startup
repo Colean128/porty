@@ -1,13 +1,8 @@
 shell.run("clear")
-print("Porty v3 and a half by Cocksucker")
+print("Porty v0.2.1 by Zayne")
 shell.run("disk/programs/hello")
 print("Opening Shell")
-
-for i = 1, 8 do
-  term.blit("fuck you"):sub(i, i):rep(10), ("e"):rep(10), ("f"):rep(10))
-  term.setCursorPos(1, i)
-  sleep(i * 100)
-end
+print("Cocksucker you are messing with my startup")
 
 -- -- needed in our kernel load
 -- local function execInstruction(str)
