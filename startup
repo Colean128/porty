@@ -30,7 +30,6 @@ end
 
 clear()
 
-
 if input == "y" then
 	shell.run("programs/hello")
 else
