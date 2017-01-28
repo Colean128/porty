@@ -1,39 +1,290 @@
 -- Porty launcher by LoganDark
 -- You can run by using this function: loadstring(http.get("http://logandark.net/cccode/porty-launcher.lua").readAll())
+
 -- Porty 0.2.2 by Zayne
-local input = ""
+_G["porty"] = {};
+porty.system = {};
+porty.system.version = "0.2.2";
+porty.system.stage = "alpha";
+porty.system.author = "Zayne";
 
-function set(n)
-	term.setCursorPos(1, n)
-	term.clearLine()
+porty.system.display = {};
+
+function porty.system.display.write(s, color)
+	local oldColor = term.getTextColor();
+	term.setTextColor(color);
+	write(s);
+	term.setTextColor(oldColor);
+	
+	oldColor = nil;
+	return;
 end
 
-function clear()
-	term.clear()
-	set(1);
+function porty.system.display.print(s, color)
+	porty.system.display.write(s .. "\n", color);
+	return;
 end
 
-local function find(t)
-	for _, i in pairs(rs.getSides()) do
-		if peripheral.getType(i) == t then
-			return i
+function porty.system.display.clear()
+	term.setCursorPos(1, 1);
+	term.setBackgroundColor(colors.black);
+	term.setTextColor(colors.lightGray);
+	term.clear();
+end
+
+function porty.system.display.clearAndPosition(x, y)
+	porty.system.display.clear();
+	term.setCursorPos(x, y);
+end
+
+porty.system.peripherals = {};
+porty.system.peripherals.list = {};
+
+function porty.system.peripherals.getPeripherals()
+	porty.system.peripherals.list = {};
+	
+	-- Native entries:
+	local terminal = {
+		type = "screen",
+		side = "bottom",
+		usable = term,
+		enabled = true;
+	};
+	
+	table.insert(porty.system.peripherals.list, terminal);
+	-- End of Native entries.
+	
+	for index, side in ipairs(rs.getSides()) do
+		if peripheral.isPresent(side) then
+			local constructor = {
+				type = peripheral.getType(side),
+				side = side,
+				usable = peripheral.wrap(side),
+				enabled = true,
+			};
+			
+			table.insert(porty.system.peripherals.list, constructor);
 		end
 	end
-	error("No " .. t .. ".", 0)
 end
 
-while not (input == "y" or input == "n") do
-	clear()
-	print("Boot into Porty? (Y/N)")
-	_, input = os.pullEvent(key)
+function porty.system.peripherals.getPeripheralBySide(side)
+	if porty.system.peripherals.list == nil or porty.system.peripherals.list == {} or type(porty.system.peripherals.list) ~= "table" then
+		porty.system.peripherals.getPeripherals();
+	end
+	
+	if side == nil then
+		error("getPeripheralBySide: side: Expected string, found nil");
+		return;
+	elseif type(side) ~= "string" then
+		error("getPeripheralBySide: side: Expected string, found " .. type(side));
+		return;
+	end
+	
+	for index, peripheral in ipairs(porty.system.peripherals.list) do
+		if peripheral.side ~= nil and peripheral.side == side and peripheral.enabled ~= nil and peripheral.enabled then
+			return peripheral;
+		end
+	end
+	
+	return nil;
 end
 
-clear()
+function porty.system.peripherals.getPeripheralByType(typep)
+	if porty.system.peripherals.list == nil or porty.system.peripherals.list == {} or type(porty.system.peripherals.list) ~= "table" then
+		porty.system.peripherals.getPeripherals();
+	end
+	
+	if typep == nil then
+		error("getPeripheralByType: type: Expected string, found nil");
+		return;
+	elseif type(typep) ~= "string" then
+		error("getPeripheralByType: type: Expected string, found " .. type(typep));
+		return;
+	end
+	
+	for index, peripheral in ipairs(porty.system.peripherals.list) do
+		if peripheral.type ~= nil and peripheral.type == typep and peripheral.enabled ~= nil and peripheral.enabled then
+			return peripheral;
+		end
+	end
+	
+	return nil;
+end
 
-if input == "y" then
-	shell.run("programs/hello")
+function porty.system.peripherals.setPeripheralEnabledBySide(side, enabled)
+	if porty.system.peripherals.list == nil or porty.system.peripherals.list == {} or type(porty.system.peripherals.list) ~= "table" then
+		porty.system.peripherals.getPeripherals();
+	end
+	
+	if side == nil then
+		error("setPeripheralEnabledBySide: side: Expected string, found nil");
+		return;
+	elseif type(side) ~= "string" then
+		error("setPeripheralEnabledBySide: side: Expected string, found " .. type(side));
+		return;
+	elseif enabled == nil then
+		error("setPeripheralEnabledBySide: enabled: Expected boolean, found nil");
+		return;
+	elseif type(enabled) ~= "boolean" then
+		error("setPeripheralEnabledBySide: enabled: Expected boolean, found " .. type(enabled));
+		return;
+	end
+	
+	for index, peripheral in ipairs(porty.system.peripherals.list) do
+		if peripheral.side ~= nil and peripheral.side == side and peripheral.enabled ~= nil and peripheral.enabled == true and peripheral.type ~= "screen" then
+			local constructor = peripheral;
+			constructor.enabled = enabled;
+			porty.system.peripherals.list[index] = constructor;
+			
+			return;
+		end
+	end
+end
+
+function porty.system.peripherals.setPeripheralEnabledByType(typep, enabled)
+	if porty.system.peripherals.list == nil or porty.system.peripherals.list == {} or type(porty.system.peripherals.list) ~= "table" then
+		porty.system.peripherals.getPeripherals();
+	end
+	
+	if typep == nil then
+		error("setPeripheralEnabledByType: type: Expected string, found nil");
+		return;
+	elseif type(typep) ~= "string" then
+		error("setPeripheralEnabledByType: type: Expected string, found " .. type(typep));
+		return;
+	elseif enabled == nil then
+		error("setPeripheralEnabledByType: enabled: Expected boolean, found nil");
+		return;
+	elseif type(enabled) ~= "boolean" then
+		error("setPeripheralEnabledByType: enabled: Expected boolean, found " .. type(enabled));
+		return;
+	end
+	
+	for index, peripheral in ipairs(porty.system.peripherals.list) do
+		if peripheral.type ~= nil and peripheral.type == typep and peripheral.enabled ~= nil and peripheral.enabled == true and peripheral.type ~= "screen" then
+			local constructor = peripheral;
+			constructor.enabled = enabled;
+			porty.system.peripherals.list[index] = constructor;
+			
+			return;
+		end
+	end
+end
+
+porty.system.display.clear();
+
+porty.system.display.write("Porty ", colors.lightGray);
+porty.system.display.write(porty.system.version, colors.white);
+porty.system.display.write(" (", colors.lightGray);
+porty.system.display.write(porty.system.stage, colors.white);
+porty.system.display.write(") \n", colors.lightGray);
+
+porty.system.display.print("Copyright (C) Zayne 2017 - All rights reserved\n", colors.lightGray);
+
+porty.system.display.write("Searching for peripherals... ", colors.lightGray);
+porty.system.peripherals.getPeripherals();
+porty.system.display.print("done", colors.white);
+
+porty.system.onDisk = false;
+porty.system.path = "unknown";
+
+for index, peripheral in ipairs(porty.system.peripherals.list) do
+	if peripheral.type == "disk" and disk.hasData(peripheral.side) then
+		local index = 0;
+		
+		while index ~= 99 do
+			if fs.exists("/disk/programs") or fs.exists("/disk" .. index .. "/programs") then
+				porty.system.onDisk = true;
+				if fs.exists("/disk/programs") then
+					porty.system.path = "/disk/";
+				else
+					porty.system.path = "/disk" .. index .. "/";
+				end
+				
+				break;
+			end
+			
+			index = index + 1;
+		end
+		
+		porty.system.diskSide = peripheral.side;
+	end
+end
+
+if porty.system.path == "unknown" then
+	porty.system.path = shell.dir();
+end
+
+porty.system.display.write("Porty is currently on a ", colors.lightGray);
+if porty.system.onDisk then
+	porty.system.display.write("floppy disk", colors.white);
 else
-	local diskSide = find("disk")
-	disk.eject(diskSide)
+	porty.system.display.write("hard drive", colors.white);
+end
+porty.system.display.write(".\n", colors.lightGray);
+
+local lastX, lastY = term.getCursorPos();
+porty.system.display.write("Do you want to start Porty (y/N) ? ", colors.lightGray);
+term.setCursorBlink(true);
+term.setTextColor(colors.white);
+
+local choice = true;
+sleep(0.2); -- Sleep to ignore keys before run of startup in CraftOS shell.
+
+local xKey, yKey = term.getCursorPos();
+local choiceKey = "";
+
+while choice do
+	local event, keyId = os.pullEvent("key_up");
+	local key = keys.getName(keyId);
+	
+	term.setCursorPos(xKey, yKey);
+	
+	if key ~= "enter" and key ~= "up" and key ~= "down" and key ~= "left" and key ~= "right" and key ~= "backspace" and key ~= "delete" and key ~= "leftShift" and key ~= "rightShift" and key ~= "one" and key ~= "two" and key ~= "three" and key ~= "four" and key ~= "five" and key ~= "six" and key ~= "seven" and key ~= "eight" and key ~= "nine" and key ~= "zero" and key ~= "numPad0" and key ~= "numPad1" and key ~= "numPad2" and key ~= "numPad3" and key ~= "numPad4" and key ~= "numPad5" and key ~= "numPad6" and key ~= "numPad7" and key ~= "numPad8" and key ~= "numPad9" and key ~= "insert" and key ~= "home" and key ~= "pageUp" and key ~= "pageDown" and key ~= "end" and key ~= "slash" and key ~= "multiply" and key ~= "minus" and key ~= "slash" and key ~= "numPadAdd" and key ~= "period" and key ~= "grave" and key ~= "backslash" and key ~= "semiColon" and key ~= "rightBracket" and key ~= "comma" and key ~= "tab" and key ~= "leftBracket" and key ~= "rightBracket" and key ~= "leftAlt" and key ~= "rightAlt" and key ~= "equals" and key ~= "apostrophe" and key ~= "rightCtrl" and key ~= "leftCtrl" and key ~= "f1" and key ~= "f2" and key ~= "f3" and key ~= "f4" and key ~= "f5" and key ~= "f6" and key ~= "f7" and key ~= "f8" and key ~= "f9" and key ~= "f10" and key ~= "f11" and key ~= "f12" and key ~= nil then
+		write(key);
+		term.setCursorPos(xKey, yKey);
+	end
+	
+	if key ~= "enter" then
+		choiceKey = key;
+	else
+		if choiceKey == "y" or choiceKey == "n" then
+			choice = false;
+		else
+			porty.system.display.print("\nInvalid choice.", colors.lightGray);
+			term.setCursorPos(xKey, yKey);
+		end
+	end
+end
+
+term.setCursorBlink(false);
+print();
+
+if choiceKey == "y" then
+	if fs.exists(porty.system.path .. "/programs/hello") and fs.isDir(porty.system.path .. "/programs/hello") == false then
+		os.run({}, porty.system.path .. "/programs/hello");
+		
+		porty.system.display.write("End of the Porty kernel reached. System halted.", colors.lightGray);
+		
+		while true do
+			os.queueEvent("porty_halt");
+			os.pullEvent();
+		end
+	else
+		porty.system.display.write("Porty could not start because the file from ", colors.lightGray);
+		porty.system.display.write(porty.system.path .. "/programs/hello", colors.white);
+		porty.system.display.write(" does not exists.", colors.lightGray);
+		
+		while true do
+			os.queueEvent("porty_halt"); -- Loop infinitly without crashing.
+			os.pullEvent();
+		end
+	end
+else
+	if porty.system.onDisk then
+		disk.eject(porty.system.diskSide);
+	end
+	
 	os.reboot();
 end
