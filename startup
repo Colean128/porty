@@ -2,6 +2,7 @@
 -- You can run by using this function: loadstring(http.get("http://logandark.net/cccode/porty-launcher.lua").readAll())
 
 -- Porty 0.2.2 by Zayne
+
 _G["porty"] = {};
 porty.system = {};
 porty.system.version = "0.2.2";
@@ -222,6 +223,46 @@ if porty.system.onDisk then
 else
 	porty.system.display.write("hard drive", colors.white);
 end
+
+porty.system.display.write("Porty is loading the configuration... ", colors.lightGray);
+
+porty.system.configuration = {};
+porty.system.configuration.path = porty.system.path .. "/configuration.cfg";
+
+if fs.isDir(porty.system.configuration.path) then
+	fs.delete(pporty.system.configuration.path);
+end
+
+if fs.exists(porty.system.configuration.path) == false then
+	local structure = {
+		shell = "/programs/hello",
+	};
+	
+	local configuration = fs.open(porty.system.configuration.path, "w");
+	configuration.write(textutils.serialise(structure));
+	configuration.close();
+end
+
+local configuration = fs.open(porty.system.configuration.path, "r");
+local structure = textutils.unserialise(configuration.readAll());
+configuration.close();
+
+if structure.shell == nil then
+	porty.system.display.print("failed", colors.white);
+	porty.system.display.write("The file from path ", colors.lightGray);
+	porty.system.display.write(porty.system.configuration.path, colors.white);
+	porty.system.display.print(" is either corrumpted or not correct.");
+	porty.sysetm.display.print("Please delete this file and restart the computer to fix this problem.", colors.lightGray);
+	
+	while true do
+		os.queueEvent("porty_halt"); -- Loop infinitly again without crashing.
+		os.pullEvent();
+	end
+end
+
+porty.system.shell = {};
+porty.system.shell.path = structure.shell;
+
 porty.system.display.write(".\n", colors.lightGray);
 
 local lastX, lastY = term.getCursorPos();
@@ -262,8 +303,8 @@ term.setCursorBlink(false);
 print();
 
 if choiceKey == "y" then
-	if fs.exists(porty.system.path .. "/programs/hello") and fs.isDir(porty.system.path .. "/programs/hello") == false then
-		os.run({}, porty.system.path .. "/programs/hello");
+	if fs.exists(porty.system.path .. porty.system.shell.path) and fs.isDir(porty.system.path .. porty.system.shell.path) == false then
+		os.run({}, porty.system.path .. porty.system.shell.path);
 		
 		porty.system.display.write("End of the Porty kernel reached. System halted.", colors.lightGray);
 		
