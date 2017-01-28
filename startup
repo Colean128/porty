@@ -252,9 +252,9 @@ porty.system.display.print("done", colors.white);
 if structure.shell == nil then
 	porty.system.display.print("failed", colors.white);
 	porty.system.display.write("The file from path ", colors.lightGray);
-	porty.system.display.write(porty.system.configuration.path, colors.white);
-	porty.system.display.print(" is either corrumpted or not correct.");
-	porty.sysetm.display.print("Please delete this file and restart the computer to fix this problem.", colors.lightGray);
+	porty.system.display.write("/" .. porty.system.configuration.path, colors.white);
+	porty.system.display.print(" is either corrumpted or not correct.", colors.lightGray);
+	porty.system.display.print("Please delete this file and restart the computer to fix this problem.", colors.lightGray);
 	
 	while true do
 		os.queueEvent("porty_halt"); -- Loop infinitly again without crashing.
