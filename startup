@@ -219,9 +219,9 @@ end
 
 porty.system.display.write("Porty is currently on a ", colors.lightGray);
 if porty.system.onDisk then
-	porty.system.display.write("floppy disk", colors.white);
+	porty.system.display.write("floppy disk\n", colors.white);
 else
-	porty.system.display.write("hard drive", colors.white);
+	porty.system.display.write("hard drive\n", colors.white);
 end
 
 porty.system.display.write("Porty is loading the configuration... ", colors.lightGray);
