@@ -1,2 +1,0 @@
--- bells ching chang chong
-print(http.get("http://chinky.club").readAll())
