@@ -247,6 +247,8 @@ local configuration = fs.open(porty.system.configuration.path, "r");
 local structure = textutils.unserialise(configuration.readAll());
 configuration.close();
 
+porty.system.display.print("done", colors.white);
+
 if structure.shell == nil then
 	porty.system.display.print("failed", colors.white);
 	porty.system.display.write("The file from path ", colors.lightGray);
