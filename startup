@@ -1,9 +1,6 @@
 -- Porty launcher by LoganDark
 -- You can run by using this function: loadstring(http.get("http://logandark.net/cccode/porty-launcher.lua").readAll())
 -- Porty 0.2.2 by Zayne
-
--- This is an comment text, used to test if the pull request works. - Redall.
-
 local input = ""
 
 function set(n)
