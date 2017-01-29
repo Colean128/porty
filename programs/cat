@@ -37,6 +37,7 @@ local count = 0;
 local w, h = term.getSize();
 local mx = h - 1;
 
+sleep(0.1);
 for index, line in ipairs(cont) do
 	porty.system.display.print(line, colors.lightGray);
 	
