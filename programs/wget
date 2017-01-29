@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 local arguments = porty.shell.program.arguments;-- This should be changed when the Porty Shell will be existing.
+=======
+local arguments = { ... }; -- This should be changed when the Porty Shell will be existing.
+>>>>>>> refs/remotes/spongecattle/spongecattle-patch-1
 
 if (arguments[1] == nil) or (arguments[2] == nil) then
 	print("Usage: wget <file> <url>");
@@ -9,4 +13,8 @@ fstream.write(http.get(...).readAll());
 fstream.close();
 
 print("Successfuly downloaded to " .. arguments[2] .. ".");
+<<<<<<< HEAD
 return;
+=======
+return;
+>>>>>>> refs/remotes/spongecattle/spongecattle-patch-1
