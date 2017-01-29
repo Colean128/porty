@@ -1,6 +1,9 @@
 {
-  dir = "/programs/ls",
-  cd = "/programs/cd",
   hello = "/programs/hello",
+  cd = "/programs/cd",
   ls = "/programs/ls",
+  dir = "/programs/ls",
+  delete = "/programs/del",
+  del = "/programs/del",
+  rm = "/programs/del",
 }

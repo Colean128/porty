@@ -276,7 +276,7 @@ end
 porty.system.shell = {};
 porty.system.shell.path = structure.shell;
 
-porty.system.display.write(".\n", colors.lightGray);
+porty.system.display.write("\n", colors.lightGray);
 
 local lastX, lastY = term.getCursorPos();
 porty.system.display.write("Do you want to start Porty (y/N) ? ", colors.lightGray);

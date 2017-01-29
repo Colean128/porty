@@ -1,0 +1,28 @@
+local args = porty.shell.program.arguments;
+
+if args[1] == nil then
+	porty.system.display.write("Usage: ", colors.lightGray);
+	porty.system.display.print("del <file>", colors.white);
+	
+	return;
+end
+
+local path = porty.shell.resolve(porty.shell.path .. "/" .. args[1]);
+
+if fs.exists(path) and fs.isReadOnly(path) == false then
+	fs.delete(path);
+	porty.system.display.write("Successfuly removed ", colors.lightGray);
+	porty.system.display.print(path, colors.white);
+	
+	return;
+else
+	if fs.exists(path) == false then
+		porty.system.display.write("del", colors.white);
+		porty.system.display.print(": Given path does not exists.", colors.lightGray);
+	elseif fs.isReadOnly(path) then
+		porty.system.display.write("del", colors.white);
+		porty.system.display.print(": Given path is read-only.", colors.lightGray);
+	end
+	
+	return;
+end
