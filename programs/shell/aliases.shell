@@ -1,0 +1,6 @@
+{
+  dir = "/programs/ls",
+  cd = "/programs/cd",
+  hello = "/programs/hello",
+  ls = "/programs/ls",
+}

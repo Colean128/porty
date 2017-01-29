@@ -1,0 +1,144 @@
+_G["shell"] = shell;
+
+porty.shell = {};
+porty.shell.running = true;
+porty.shell.path = "/";
+porty.shell.version = "0.1.0";
+porty.shell.stage = "alpha";
+porty.shell.author = "Redall";
+
+porty.system.display.write("The Porty shell - Version ", colors.lightGray);
+porty.system.display.write(porty.shell.version, colors.white);
+porty.system.display.write(" (", colors.lightGray);
+porty.system.display.write(porty.shell.stage, colors.white);
+porty.system.display.print(") ", colors.lightGray);
+porty.system.display.print("Copyright (C) Zayne and/or Redall 2017 - All rights reserved\n", colors.lightGray);
+
+porty.shell.aliases = {};
+
+porty.system.display.write("Loading aliases... ", colors.lightGray);
+if fs.exists(porty.system.path .. "/programs/shell/aliases.shell") == false then
+	local aliases = {
+		hello = "/programs/hello",
+		cd = "/programs/cd",
+		ls = "/programs/ls",
+		dir = "/programs/ls",
+		wget = "/programs/wget",
+		download = "/programs/download",
+	};
+	
+	local fstream = fs.open(porty.system.path .. "/programs/shell/aliases.shell", "w");
+	fstream.write(textutils.serialise(aliases));
+	fstream.close();
+end
+
+local fstream = fs.open(porty.system.path .. "/programs/shell/aliases.shell", "r");
+porty.shell.aliases = textutils.unserialise(fstream.readAll());
+fstream.close();
+
+porty.system.display.print("done", colors.white);
+
+porty.shell.program = {};
+porty.shell.program.arguments = {};
+
+function porty.shell.parseCommand(shell)
+	local chartable = {};
+	local newshell = shell;
+
+	if porty.system.strings.ends(shell, " ") == false then
+		newshell = shell .. " ";
+	end
+	
+	newshell:gsub(".", function(character) table.insert(chartable, character); end); -- Transforms a string onto a table of characters.
+	
+	local commandtable = {};
+	
+	local currentarg = "";
+	local recmode = false;
+	
+	for index, character in ipairs(chartable) do
+		if recmode then
+			if character ~= "\"" then
+				currentarg = currentarg .. character;
+			else
+				recmode = false;
+				table.insert(commandtable, currentarg);
+				currentarg = "";
+			end
+		else
+			if character == "\"" then
+				recmode = true;
+			elseif character == " " then
+				table.insert(commandtable, currentarg);
+				currentarg = "";
+			elseif index - 1 == #shell then
+				table.insert(commandtable, currentarg);
+				currentarg = "";
+			else
+				currentarg = currentarg .. character;
+			end
+		end
+	end
+	
+	return commandtable;
+end
+
+-- From the Shell program located at /rom/programs.
+function porty.shell.resolve(path)
+	local sStartChar = string.sub( path, 1, 1 )
+	if sStartChar == "/" or sStartChar == "\\" then
+		return fs.combine( "/", path )
+	else
+		return fs.combine( "", path )
+	end
+end
+
+while porty.shell.running do
+	term.setTextColor(colors.lightGray);
+	term.setBackgroundColor(colors.black);
+	porty.system.display.write(os.getComputerLabel(), colors.white);
+	porty.system.display.write("@", colors.lightGray);
+	porty.system.display.write(porty.shell.path, colors.white);
+	porty.system.display.write(": ", colors.lightGray);
+	
+	term.setTextColor(colors.white);
+	local command = porty.shell.parseCommand(read());
+	term.setTextColor(colors.lightGray);
+	
+	if command[1] == nil or command[1] == "" or command == {} or command == nil or command == { "" } then
+		-- Nothing to happen.
+	else
+		if fs.exists(porty.shell.resolve(porty.shell.path .. "/" .. command[1])) and fs.isDir(porty.shell.resolve(porty.shell.path .. "/" .. command[1])) == false then
+			local newtable = {};
+			for index, arg in ipairs(command) do
+				if index > 1 then
+					table.insert(newtable, arg);
+				end
+			end
+			
+			porty.shell.program.arguments = newtable;
+			
+			os.run(newtable, porty.shell.resolve(porty.shell.path .. "/" .. command[1]));
+		else
+			local success = false;
+			if porty.shell.aliases[string.lower(command[1])] ~= nil then
+				local newtable = {};
+				for index, arg in ipairs(command) do
+					if index > 1 then
+						table.insert(newtable, arg);
+					end
+				end
+				
+				porty.shell.program.arguments = newtable;
+				
+				success = true;
+				
+				os.run(newtable, porty.system.path .. "/" .. porty.shell.aliases[string.lower(command[1])]);
+			end
+			
+			if success == false then
+				porty.system.display.print("Bad command or filename.", colors.gray);
+			end
+		end
+	end
+end
