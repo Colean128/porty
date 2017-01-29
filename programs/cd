@@ -1,12 +1,33 @@
-local env = {}
-for i,v in pairs(math) do
-  env[i] = v
+local args = porty.shell.program.arguments;
+
+if args[1] == nil then
+	porty.system.display.write("Usage: ", colors.lightGray);
+	porty.system.display.print("cd <directory>", colors.white);
+	
+	return;
 end
 
-input = read()
+local oldpath = porty.shell.path;
+local newpath = porty.shell.resolve(porty.shell.path .. "/" .. args[1]);
 
-local f = loadstring("return "..input)
+if fs.exists(newpath) == false then
+	porty.system.display.write("cd", colors.white);
+	porty.system.display.print(": Given path does not exists.", colors.lightGray);
+	
+	return;
+elseif fs.isDir(newpath) == false then
+	porty.system.display.write("cd", colors.white);
+	porty.system.display.print(": Given path is not a directory.", colors.lightGray);
+	
+	return;
+end
 
-local f2 = setfenv(f,env)
+local resolvedpath = newpath;
+porty.shell.path = "/" .. resolvedpath;
 
-print(f2())
+porty.system.display.write("cd", colors.white);
+porty.system.display.write(": Changed from ", colors.lightGray);
+porty.system.display.write("/" .. porty.shell.resolve(oldpath), colors.white);
+porty.system.display.write(" to ", colors.lightGray);
+porty.system.display.write("/" .. porty.shell.resolve(newpath), colors.white);
+porty.system.display.print(".", colors.lightGray);
