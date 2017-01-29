@@ -1,0 +1,51 @@
+local args = porty.shell.program.arguments;
+
+if args[1] == nil then
+	porty.system.display.write("Usage: ", colors.lightGray);
+	porty.system.display.print("cat <file>", colors.white);
+	
+	return;
+end
+
+local path = porty.shell.resolve(porty.shell.path .. "/" .. args[1]);
+
+if fs.exists(path) == false then
+	porty.system.display.write("cat", colors.white);
+	porty.system.display.print(": Given path does not exists.", colors.lightGray);
+	
+	return;
+end
+
+if fs.isDir(path) then
+	porty.system.display.write("cat", colors.white);
+	porty.system.display.print(": Given path is a directory. ", colors.lightGray);
+	
+	return;
+end
+
+local d = fs.open(path, "r");
+local cont = {};
+
+local s = "";
+while s ~= nil do
+	s = d.readLine();
+	table.insert(cont, s);
+end
+d.close();
+
+local count = 0;
+local w, h = term.getSize();
+local mx = h - 1;
+
+for index, line in ipairs(cont) do
+	porty.system.display.print(line, colors.lightGray);
+	
+	if count == mx then
+		porty.system.display.write("Press any key to continue...", colors.white);
+		os.pullEvent("key_up");
+		term.clearLine();
+		count = 0;
+	else
+		count = count + 1;
+	end
+end

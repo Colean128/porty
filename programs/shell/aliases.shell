@@ -6,4 +6,10 @@
   delete = "/programs/del",
   del = "/programs/del",
   rm = "/programs/del",
+  mkdir = "/programs/mkdir",
+  mkd = "/programs/mkdir",
+  md = "/programs/mkdir",
+  clear = "/programs/clear",
+  cls = "/programs/clear",
+  cat = "/programs/cat",
 }
