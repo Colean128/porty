@@ -1,0 +1,72 @@
+local args = porty.shell.program.arguments;
+
+local path = "";
+
+if args[1] ~= nil then
+	path = porty.shell.resolve(porty.shell.path .. "/" .. args[1]);
+else
+	path = porty.shell.resolve(porty.shell.path .. "/");
+end
+
+if fs.isDir(path) == false then
+	porty.system.display.write("ls: ", colors.lightGray);
+	porty.system.display.print("Given path is not a directory or does not exists.", colors.lightGray);
+	return;
+end
+
+local list = fs.list(path);
+
+porty.system.display.write("\n Directory is ", colors.lightGray);
+porty.system.display.print("/" .. path .. "\n", colors.white);
+
+local w, h = term.getSize();
+local mx = h - 4;
+local cnt = 0;
+
+sleep(0.1); -- Prevent key_up event.
+
+for index, item in ipairs(list) do
+	if fs.isDir(path .. "/" .. item) then
+		porty.system.display.write(" " .. item, colors.white);
+	else
+		porty.system.display.write(" " .. item, colors.lightGray);
+	end
+	
+	local x, y = term.getCursorPos();
+	term.setCursorPos(20, y);
+	
+	if fs.isDir(path .. "/" .. item) then
+		porty.system.display.write("(directory) ", colors.lightGray);
+	else
+		porty.system.display.write("(file)      ", colors.lightGray);
+		porty.system.display.write(fs.getSize(path .. "/" .. item), colors.white);
+		porty.system.display.write(" bytes", colors.lightGray);
+	end
+	
+	term.setCursorPos(w - 3, y);
+	if fs.isDir(path .. "/" .. item) and fs.isReadOnly(path .. "/" .. item) then
+		porty.system.display.print("dr", colors.gray);
+	elseif fs.isReadOnly(path .. "/" .. item) then
+		porty.system.display.print("fr", colors.gray);
+	elseif fs.isDir(path .. "/" .. item) then
+		porty.system.display.print("dw", colors.gray);
+	else
+		porty.system.display.print("fw", colors.gray);
+	end
+	
+	if cnt == mx then
+		term.setCursorPos(1, h);
+		porty.system.display.write("Press any key to continue... ", colors.white);
+		os.pullEvent("key_up");
+		term.setCursorPos(1, h);
+		term.setBackgroundColor(colors.black);
+		term.clearLine();
+		
+		cnt = 0;
+	end
+	
+	cnt = cnt + 1;
+end
+
+print();
+return;

@@ -38,6 +38,17 @@ function porty.system.display.clearAndPosition(x, y)
 	term.setCursorPos(x, y);
 end
 
+porty.system.strings = {};
+--Source: http://lua-users.org/wiki/StringRecipes
+function porty.system.strings.starts(String, Start)
+   return string.sub(String,1,string.len(Start))==Start;
+end
+
+--Source: http://lua-users.org/wiki/StringRecipes
+function porty.system.strings.ends(String, End)
+   return End=='' or string.sub(String,-string.len(End))==End;
+end
+
 porty.system.peripherals = {};
 porty.system.peripherals.list = {};
 
@@ -235,7 +246,7 @@ end
 
 if fs.exists(porty.system.configuration.path) == false then
 	local structure = {
-		shell = "/programs/hello",
+		shell = "/programs/shell/portyshell",
 	};
 	
 	local configuration = fs.open(porty.system.configuration.path, "w");
@@ -302,7 +313,7 @@ while choice do
 end
 
 term.setCursorBlink(false);
-print();
+print("\n");
 
 if choiceKey == "y" then
 	if fs.exists(porty.system.path .. porty.system.shell.path) and fs.isDir(porty.system.path .. porty.system.shell.path) == false then

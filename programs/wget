@@ -1,4 +1,4 @@
-local arguments = { ... }; -- This should be changed when the Porty Shell will be existing.
+local arguments = porty.shell.program.arguments;-- This should be changed when the Porty Shell will be existing.
 
 if (arguments[1] == nil) or (arguments[2] == nil) then
 	print("Usage: wget <file> <url>");
