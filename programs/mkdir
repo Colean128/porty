@@ -1,0 +1,24 @@
+local args = porty.shell.program.arguments;
+
+if args[1] == nil then
+	porty.system.display.write("Usage: ", colors.lightGray);
+	porty.system.display.print("mkdir <path>", colors.white);
+	
+	return;
+end
+
+local path = porty.shell.resolve(porty.shell.path .. "/" .. args[1]);
+
+if fs.exists(path) then
+	porty.system.display.write("mkdir", colors.white);
+	porty.system.display.print(": Given path already exists.", colors.lightGray);
+	
+	return;
+end
+
+fs.makeDir(path);
+
+porty.system.display.write("Directory ", colors.lightGray);
+porty.system.display.write(path, colors.white);
+porty.system.display.print(" has been created.", colors.lightGray);
+return;
