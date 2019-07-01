@@ -1,4 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/spongecattle/porty.png?label=ready&title=Ready)](https://waffle.io/spongecattle/porty)
+[![Porty is discontinued, use Graduation!](https://github.com/Zayne64/Graduation)
 # Porty: The Portable Shell
 
 All customized copies uploaded to the ComputerCraft forums have to be:
