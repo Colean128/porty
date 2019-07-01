@@ -1,4 +1,4 @@
-[![Porty is discontinued, use Graduation!](https://github.com/Zayne64/Graduation)
+![Porty is discontinued, use Graduation!](https://github.com/Zayne64/Graduation)
 # Porty: The Portable Shell
 
 All customized copies uploaded to the ComputerCraft forums have to be:
